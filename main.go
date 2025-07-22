@@ -3,30 +3,33 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 )
 
+var outWriter io.Writer = os.Stdout
+
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("usage: go run . <file>")
+		fmt.Fprintln(outWriter, "usage: go run . <file>")
 		return
 	}
 
 	ants, rooms, _, err := ParseFile(os.Args[1])
 	if err != nil {
-		fmt.Println("ERROR: invalid data format")
+		fmt.Fprintln(outWriter, "ERROR: invalid data format")
 		return
 	}
 
 	start, end := rooms.Start, rooms.End
 	if start == nil || end == nil {
-		fmt.Println("ERROR: invalid data format")
+		fmt.Fprintln(outWriter, "ERROR: invalid data format")
 		return
 	}
 
 	path := BFS(start, end)
 	if len(path) == 0 {
-		fmt.Println("ERROR: no path")
+		fmt.Fprintln(outWriter, "ERROR: no path")
 		return
 	}
 
@@ -35,7 +38,7 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+		fmt.Fprintln(outWriter, scanner.Text())
 	}
 
 	Simulate(ants, path)
